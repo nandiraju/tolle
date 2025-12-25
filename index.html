@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Present Moment Cards</title>
+
+  <!-- Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#0b1220;
+      --card:#f3f4f6;
+      --border:#e5e7eb;
+      --accent:#2563eb;
+      --shadow: 0 16px 48px rgba(2,6,23,.10);
+    }
+    body.dark{
+      --bg:#0b1220;
+      --text:#e5e7eb;
+      --card:#111b2e;
+      --border:#1f2a44;
+      --accent:#38bdf8;
+      --shadow: 0 18px 60px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+      transition: background .18s ease, color .18s ease;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{
+      width:100%;
+      max-width:520px;
+      position:relative;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:22px;
+      padding:26px 20px;
+      min-height:320px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      box-shadow:var(--shadow);
+      will-change:transform;
+    }
+    .tip{
+      margin:0;
+      font-size:25px;
+      line-height:1.55;
+      font-weight:700;
+      letter-spacing:.1px;
+      text-wrap:balance;
+    }
+    .controls{
+      margin-top:14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .iconBtn{
+      width:52px;
+      height:52px;
+      /*border-radius:16px;*/
+      border:0px solid var(--border);
+      background:transparent;
+      color:var(--text);
+      font-size:22px;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition: transform .05s ease, background .12s ease, border-color .12s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .iconBtn:active{transform:scale(.98)}
+    .iconBtn.primary{
+      border:none;
+      background:var(--accent);
+      color:#fff;
+    }
+    /* make tap targets even nicer on mobile */
+    @media (max-width: 420px){
+      .card{min-height: 340px}
+      .tip{font-size: 18px}
+      .iconBtn{width:54px;height:54px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card" aria-live="polite">
+      <p class="tip" id="tip"></p>
+    </div>
+
+    <div class="controls">
+      <button class="iconBtn" id="themeBtn" title="Toggle theme" aria-label="Toggle theme">🌙</button>
+      <button class="iconBtn" id="nextBtn" title="Next tip" aria-label="Next tip">💡</button>
+    </div>
+  </div>
+
+  <script>
+    // Tolle-inspired present-moment prompts (paraphrases / practice cards)
+    const TIPS = [
+      "Notice you are thinking. That noticing is already presence.",
+      "Take one conscious breath and feel it fully.",
+      "Feel the aliveness in your hands for 10 seconds.",
+      "Bring attention to your feet on the ground. Arrive here.",
+      "Ask: “What is happening right now?” Then feel it without commentary.",
+      "Let this moment be as it is. Stop arguing with reality.",
+      "If there is resistance, name it softly: “resistance,” and relax.",
+      "Sense the inner body while you read these words.",
+      "Listen to the sounds around you without labeling them.",
+      "See thoughts as passing clouds. Remain the sky of awareness.",
+      "Drop the story. Keep only the simple fact of what is.",
+      "Notice tension in jaw/shoulders/belly. Soften it now.",
+      "Give full attention to one thing. Presence beats multitasking.",
+      "Stop waiting for life to begin. Life is now.",
+      "Feel the space in the room—space is as real as objects.",
+      "Notice the gap between thoughts. Rest in that gap.",
+      "Allow the present moment to be your teacher, not your opponent.",
+      "When anxiety appears, ask: “Is there a real problem right now?”",
+      "Turn problems into tasks: do what you can now, without drama.",
+      "Bring presence to waiting. Waiting becomes practice.",
+      "Before speaking, pause for one breath.",
+      "When you eat, taste fully. Let eating be meditation.",
+      "When you walk, feel each step. Let walking be now.",
+      "When you feel rushed, slow the exhale and feel space return.",
+      "Notice the urge to check your phone. Pause and feel the urge.",
+      "If boredom appears, feel its energy directly instead of escaping.",
+      "Acceptance doesn’t mean liking—only not fighting what is.",
+      "Feel the breath in the belly; let it anchor you.",
+      "Let silence be part of your day. Don’t fill space compulsively.",
+      "Notice the “me story” forming. Step back into awareness.",
+      "You are not the voice in the head. You are the awareness hearing it.",
+      "If a thought repeats, label it “loop,” then return to the breath.",
+      "Feel your palms. Feel your face. Feel the inner body.",
+      "Replace mental commentary with direct perception.",
+      "Let the moment be enough—even if the mind protests.",
+      "Practice “just this”: just breathing, just hearing, just seeing.",
+      "If sadness comes, be the space for it. Don’t personalize it.",
+      "If anger comes, feel the energy without acting from it.",
+      "If fear comes, locate it as sensation and stay gently present.",
+      "Notice emotional triggers as invitations to become conscious.",
+      "When irritation arises, find it in the body and breathe into it.",
+      "Meet discomfort without naming it a problem.",
+      "Feel the stillness underneath activity, like depth beneath waves.",
+      "Notice inner noise—then notice the silence around the noise.",
+      "Surrender for one breath: “Okay, this is here.”",
+      "Accept this moment as if you had chosen it.",
+      "When you catch yourself being unconscious, celebrate: awareness returned.",
+      "Let go of needing to understand everything. Be here instead.",
+      "Don’t seek a special state. Just be present with what is.",
+      "Feel aliveness while doing ordinary tasks.",
+      "Keep some attention inside while engaging outside.",
+      "Plan briefly if needed—then come back to now.",
+      "When regret shows up, notice thought + feeling, then return to presence.",
+      "The future is imagination. Return to the step in front of you.",
+      "Let go of “should.” Meet what is, then act if needed.",
+      "Notice how the ego seeks completion in the future—return to now.",
+      "Ask: “Can I be at ease with this moment?” Then soften 5%.",
+      "Relax the eyes. Let your gaze be soft and spacious.",
+      "Listen fully to someone without rehearsing your reply.",
+      "Let a small pause be your superpower.",
+      "Feel the breath at the nostrils for 3 slow cycles.",
+      "Feel the inner body while typing or scrolling.",
+      "Notice judgment. Return to seeing and listening.",
+      "Don’t feed mental images of the future. Come back to sensation.",
+      "Rest in the simple fact: you are aware—be that.",
+      "Stop leaving the now. Return, again and again.",
+      "Notice the mind’s “problem addiction.” Choose presence instead.",
+      "Let go of complaining. If action is needed, do it—otherwise allow.",
+      "Be here as awareness, then do the next right action.",
+      "When in pain, drop the story and feel sensation with spaciousness.",
+      "Let emotions pass through you like weather through the sky.",
+      "Feel the space between sounds, like silence holding music.",
+      "Bring attention to light and color. Let seeing become meditation.",
+      "Notice the impulse to rush to the next moment. Release it.",
+      "In conflict, return to sensation in the body before responding.",
+      "Keep attention in the body while speaking.",
+      "If you feel heavy, stop fighting the feeling—make room for it.",
+      "Practice micro-surrenders all day: soften, allow, breathe.",
+      "Notice the need to be right. Release it and return to being.",
+      "Feel gratitude by noticing what is already here in this moment.",
+      "Before sleep, feel the inner body for one minute.",
+      "Start the day with three conscious breaths before anything else.",
+      "If you forget all day, return now. One return is success.",
+      "Presence is not extra effort; it’s the absence of resistance.",
+      "Let awareness hold thoughts rather than thoughts holding you.",
+      "Touch something and feel texture fully. Come back to senses.",
+      "Sense the space in your chest as you breathe.",
+      "Notice “I can’t stand this” thoughts—then return to sensation.",
+      "When you feel incomplete, sense the completeness of this moment.",
+      "Be willing to be with what you feel, without needing it to change.",
+      "Let the now be your home base; visit thought only when useful.",
+      "When the mind speeds up, slow the exhale and feel the body.",
+      "Turn waiting into watching: watch breath, sounds, inner space.",
+      "When you feel compelled to think, feel the compulsion as sensation.",
+      "Look at the sky or a tree for 10 seconds without naming it.",
+      "Notice the quiet presence behind all experience.",
+      "Don’t postpone peace. Enter it now through acceptance.",
+      "Let “this is” be enough for one breath.",
+      "Feel stillness in the body—like a gentle hum of aliveness.",
+      "Bring attention to the rise and fall of the belly.",
+      "If you’re overwhelmed, return to feet + breath for 20 seconds.",
+      "Notice how labeling creates distance. See directly instead.",
+      "Practice “allowing” as your default inner posture.",
+      "When you do something, do it fully—then stop when it’s done.",
+      "Notice inner space when you stop resisting for even one second.",
+      "Let the present moment dissolve unnecessary mental complexity.",
+      "Feel the body from within. This is a doorway into now.",
+      "When you catch yourself time-traveling, return to inner body awareness.",
+      "Be present with the simplest sound you can hear.",
+      "Ask: “Is there any problem in this exact second?”",
+      "Let go of the need for recognition. Return to simple being.",
+      "Sense the stillness that is always here beneath thought.",
+      "Be gentle with yourself: return to now without judgment.",
+      "Allow the moment to be as it is, then respond from clarity.",
+      "Let your next breath be a complete return to the now."
+    ];
+
+    const $tip = document.getElementById("tip");
+    const $nextBtn = document.getElementById("nextBtn");
+    const $themeBtn = document.getElementById("themeBtn");
+
+    let idx = ((Math.random() * TIPS.length) | 0);
+
+    function render() {
+      $tip.textContent = TIPS[idx];
+    }
+
+    function nextTip() {
+      // Avoid immediate repeats when possible
+      if (TIPS.length <= 1) return;
+      let n;
+      do { n = ((Math.random() * TIPS.length) | 0); } while (n === idx);
+      idx = n;
+      render();
+    }
+
+    function setTheme(mode) {
+      document.body.classList.toggle("dark", mode === "dark");
+      localStorage.setItem("theme", mode);
+      $themeBtn.textContent = mode === "dark" ? "☀️" : "🌙";
+    }
+
+    // Events
+    $nextBtn.addEventListener("click", nextTip, { passive: true });
+    $themeBtn.addEventListener("click", () => {
+      const cur = localStorage.getItem("theme") || "light";
+      setTheme(cur === "dark" ? "light" : "dark");
+    }, { passive: true });
+
+    // Keyboard support (desktop)
+    window.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") nextTip();
+      if (e.key.toLowerCase() === "t") {
+        const cur = localStorage.getItem("theme") || "light";
+        setTheme(cur === "dark" ? "light" : "dark");
+      }
+    });
+
+    // Init
+    (function init() {
+      const saved = localStorage.getItem("theme") || "light";
+      setTheme(saved);
+      render();
+    })();
+  </script>
+</body>
+</html>
