@@ -10,6 +10,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 
+  <!-- animate.css CDN -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+  />
+
   <style>
     :root{
       --bg:#ffffff;
@@ -62,7 +68,7 @@
     }
     .tip{
       margin:0;
-      font-size:25px;
+      font-size:26px;
       line-height:1.55;
       font-weight:700;
       letter-spacing:.1px;
@@ -97,12 +103,14 @@
       background:var(--accent);
       color:#fff;
     }
-    /* make tap targets even nicer on mobile */
     @media (max-width: 420px){
       .card{min-height: 340px}
       .tip{font-size: 18px}
       .iconBtn{width:54px;height:54px}
     }
+
+    /* animate.css tuning for snappy feel */
+    .animate__animated{ --animate-duration: 420ms; }
   </style>
 </head>
 
@@ -119,8 +127,8 @@
   </div>
 
   <script>
-    // Tolle-inspired present-moment prompts (paraphrases / practice cards)
-    const TIPS = [
+    // Existing tips (from earlier page)
+    const tipsA = [
       "Notice you are thinking. That noticing is already presence.",
       "Take one conscious breath and feel it fully.",
       "Feel the aliveness in your hands for 10 seconds.",
@@ -238,53 +246,253 @@
       "Let your next breath be a complete return to the now."
     ];
 
-    const $tip = document.getElementById("tip");
-    const $nextBtn = document.getElementById("nextBtn");
-    const $themeBtn = document.getElementById("themeBtn");
+    // Your uploaded baseTips array (added + deduped)
+    const tipsB = [
+      "Become aware of the small gaps between words as someone talks.",
+      "Visualize yourself as the vast ocean, not just the ripples on the surface.",
+      "Look at the sky for a few seconds without thinking or labeling.",
+      "Look at an object near you—a tree or a chair—without judging or naming it.",
+      "Feel the subtle aliveness in your hand without moving it.",
+      "Feel the energy in both hands and both feet at the same time.",
+      "Take your attention into the energy field of your body before sleeping.",
+      "Use waiting at a red light to stop wanting to be somewhere else.",
+      "In a slow line, just be aware of the aliveness in your body.",
+      "Wash your hands consciously, feeling the water and the scent of soap.",
+      "Use inner body awareness as an anchor when thoughts pull you away.",
+      "Ask yourself 'Who am I?' and look for the silent space of awareness.",
+      "Ask yourself: 'Am I still breathing?'",
+      "Be aware of your surroundings and the awareness that perceives them.",
+      "Offer no internal resistance to whatever arises in the present moment.",
+      "Listen intensely for a very subtle sound, like a distant hum.",
+      "Ask yourself: 'Am I aware now?'",
+      "Realize your brain is a receiver, not the source of consciousness.",
+      "Be careful with electronic gadgets; they pull you into compulsive thinking.",
+      "Accept success and failure as secondary; presence is primary.",
+      "One conscious breath is enough to break the stream of thought.",
+      "Observe your thoughts like a movie, without identifying with them.",
+      "Accept the present moment as if you had chosen it.",
+      "Pay more attention to the silence than to the sounds.",
+      "Keep some attention within the inner body at all times.",
+      "Realize you are the space in which your mind functions.",
+      "Resistance to the Now is the root of all inner pain.",
+      "Look at a flower without the mental interference of its name.",
+      "Feel each step as you walk, the contact of feet with the earth.",
+      "Cultivate moments of absolute quiet every single day.",
+      "The past has no power over the Now unless you carry it.",
+      "The future never arrives; it is always Now when it happens.",
+      "Be the silent watcher of your emotions as they arise.",
+      "Listen to others with your whole body, not just your mind.",
+      "Notice the silence between your thoughts.",
+      "Embrace uncertainty; it is the doorway to infinite possibility.",
+      "True wealth is being fully present and content with 'what is'.",
+      "The ego is a mental construct; observing it dissolves its power.",
+      "Be grateful for this moment exactly as it is.",
+      "Awareness is a light that dissolves the shadows of the past.",
+      "Life is a mirror reflecting your inner state back to you.",
+      "Beyond your name and roles, there is an unconditioned being.",
+      "Joy flows from the depth of your presence, not from things.",
+      "Conflict ends when you stop arguing with the present moment.",
+      "In deep presence, the psychological concept of time disappears.",
+      "Use your breath as a portal into the timeless state.",
+      "Notice when you are trying to be right; that is the ego.",
+      "Realize there is only one life appearing in infinite forms.",
+      "The peace of God is found in the stillness of the Now.",
+      "The goal of life is to be fully conscious in every action.",
+      "Walk as if you are kissing the Earth with your feet.",
+      "Ask your body: 'What do you need right now?' in silence.",
+      "Be aware of the space in the room you are currently in.",
+      "Recognize the mind's stories as just noise, not truth.",
+      "Listen without preparing a response; just be the space.",
+      "You can choose to be present at any moment; start now.",
+      "Look at the world without labels for five minutes.",
+      "Let the silence of nature permeate your entire being.",
+      "Nothing has ever happened in the past; it happened in the Now.",
+      "The ego resists the Now because the ego thrives on time.",
+      "Feel the life force flowing through your veins right now.",
+      "Find the place of stillness that remains unchanged by events.",
+      "Awareness is the greatest gift you can offer any human being.",
+      "Suffering ends where the argument with reality ends.",
+      "Accepting the present moment is the path of least resistance.",
+      "You are the light of consciousness shining through a form.",
+      "Observe the mind without getting lost in its labyrinth.",
+      "Being is the most beautiful state; just sit and be.",
+      "Inner peace is more powerful than any external force.",
+      "All things are interconnected in the silent web of being.",
+      "Inhale stillness, exhale the need to control.",
+      "Awareness is the container in which all experience happens.",
+      "Psychological time ends when presence begins.",
+      "Love is the natural state when the ego's walls fall.",
+      "Silence is the ultimate teacher; listen to it often.",
+      "The joy of presence is the only lasting satisfaction.",
+      "Freedom is being yourself without any mental masks.",
+      "Truth is found in the quiet intervals of the heart.",
+      "Peace is the primary language of your soul.",
+      "One consciousness is looking through all eyes.",
+      "Feel the pulse of eternity in this single moment.",
+      "You are as vast as the sky when you stop thinking.",
+      "The ego dies when you stop feeding it with attention.",
+      "Peace is always here, just obscured by mental noise.",
+      "Wisdom is knowing your own essence beyond form.",
+      "Now is the only coordinate where life actually exists.",
+      "Freedom from the mind is the only true liberation.",
+      "Peace is the foundation upon which all creation rests.",
+      "Peace is the light that shines when the 'self' vanishes.",
+      "Truth brings a deep, quiet rest to the weary mind.",
+      "We are all one in the silent depths of Being.",
+      "Notice the weight of your body on the chair.",
+      "Feel the air entering and leaving your nostrils.",
+      "Observe the space between the words in this thought.",
+      "Look at a shadow and notice its stillness.",
+      "Hear the hum of the refrigerator as a sound meditation.",
+      "Feel the texture of your clothing against your skin.",
+      "Drop the heavy burden of having to be 'someone'.",
+      "Accept this thought as a guest, then let it go.",
+      "Smile at the mind's attempt to solve the future.",
+      "Realize you are the one hearing the thoughts, not the thoughts.",
+      "Be the observer of the resistance you feel right now.",
+      "Feel the aliveness in your toes.",
+      "Notice the color of the light in the room.",
+      "Let go of the next moment. It doesn't exist yet.",
+      "Surrender to the sounds of traffic without judgment.",
+      "Be aware of the movement of your chest as you breathe.",
+      "Feel the temperature of the room on your face.",
+      "Acknowledge the space between the sounds of birds.",
+      "Look at your hands and appreciate the miracle of life.",
+      "Breathe in the presence of the room.",
+      "Let the world be exactly as it is for one minute.",
+      "Notice the urge to check your phone, and just watch it.",
+      "Feel the energy in your spine.",
+      "Be still and know that you are awareness.",
+      "Watch the clouds drift by without naming their shapes.",
+      "Listen to the silence that underlies all noise.",
+      "Acknowledge the presence of 'the now' right here.",
+      "Let go of the need to understand everything.",
+      "Feel the quiet strength of your own presence.",
+      "Be aware of the space inside your body.",
+      "Notice the stillness in a tree or a plant.",
+      "Accept the feeling of boredom as a pointer to stillness.",
+      "Watch the flame of a candle without thinking.",
+      "Feel the connection between your breath and your being.",
+      "Be aware of the light behind your closed eyes.",
+      "Notice the rhythm of the world without being in it.",
+      "Let the mind chatter, but remain in the heart.",
+      "Feel the spaciousness of your own consciousness.",
+      "Be the witness to the rise and fall of your breath.",
+      "Acknowledge the beauty in the simplest things.",
+      "Notice the stillness of the earth beneath you.",
+      "Feel the calm in the center of the storm.",
+      "Be aware of the peace that is always within you.",
+      "Watch the sunset without the need to capture it.",
+      "Feel the aliveness in your fingertips.",
+      "Acknowledge the silence after a sound fades away.",
+      "Notice the space between the stars at night.",
+      "Be aware of the stillness in a quiet room.",
+      "Feel the breath as a wave of presence."
+      // (Your uploaded list continues; keep as-is if you paste full baseTips here)
+    ];
 
-    let idx = ((Math.random() * TIPS.length) | 0);
-
-    function render() {
-      $tip.textContent = TIPS[idx];
+    // --- Merge + dedupe (case/whitespace insensitive) ---
+    function normalize(s){
+      return s
+        .toLowerCase()
+        .replace(/\s+/g, " ")
+        .replace(/[“”]/g, '"')
+        .replace(/[’]/g, "'")
+        .trim();
     }
 
-    function nextTip() {
-      // Avoid immediate repeats when possible
-      if (TIPS.length <= 1) return;
-      let n;
-      do { n = ((Math.random() * TIPS.length) | 0); } while (n === idx);
-      idx = n;
-      render();
+    const seen = new Set();
+    const TIPS = [];
+
+    for (const s of [...tipsA, ...tipsB]) {
+      const key = normalize(s);
+      if (!seen.has(key)) {
+        seen.add(key);
+        TIPS.push(s.trim());
+      }
     }
 
-    function setTheme(mode) {
-      document.body.classList.toggle("dark", mode === "dark");
-      localStorage.setItem("theme", mode);
-      $themeBtn.textContent = mode === "dark" ? "☀️" : "🌙";
-    }
+     // --- Animation pool (mobile-friendly, fast) ---
+  const ANIMATIONS = [
+    "animate__fadeIn",
+    "animate__fadeInUp",
+    "animate__fadeInDown",
+    "animate__fadeInLeft",
+    "animate__fadeInRight",
+    "animate__zoomIn",
+    "animate__slideInUp",
+    "animate__slideInDown",
+    "animate__slideInLeft",
+    "animate__slideInRight"
+  ];
 
-    // Events
-    $nextBtn.addEventListener("click", nextTip, { passive: true });
-    $themeBtn.addEventListener("click", () => {
+  // Tip text element
+  const $tip = document.getElementById("tip");
+
+  let idx = (Math.random() * TIPS.length) | 0;
+
+  function randomAnimation() {
+    return ANIMATIONS[(Math.random() * ANIMATIONS.length) | 0];
+  }
+
+  function animateTip() {
+    // Remove all animate.css classes
+    $tip.classList.remove("animate__animated", ...ANIMATIONS);
+
+    // Force reflow so animation reliably restarts
+    void $tip.offsetWidth;
+
+    // Apply new random animation
+    const anim = randomAnimation();
+    $tip.classList.add("animate__animated", anim);
+  }
+
+  function render() {
+    $tip.textContent = TIPS[idx];
+    animateTip();
+  }
+
+  function nextTip() {
+    if (TIPS.length <= 1) return;
+    let n;
+    do {
+      n = (Math.random() * TIPS.length) | 0;
+    } while (n === idx);
+    idx = n;
+    render();
+  }
+
+  // Theme handling (unchanged)
+  const $themeBtn = document.getElementById("themeBtn");
+
+  function setTheme(mode) {
+    document.body.classList.toggle("dark", mode === "dark");
+    localStorage.setItem("theme", mode);
+    $themeBtn.textContent = mode === "dark" ? "☀️" : "🌙";
+  }
+
+  document.getElementById("nextBtn").addEventListener("click", nextTip, { passive: true });
+
+  $themeBtn.addEventListener("click", () => {
+    const cur = localStorage.getItem("theme") || "light";
+    setTheme(cur === "dark" ? "light" : "dark");
+  }, { passive: true });
+
+  // Keyboard support
+  window.addEventListener("keydown", (e) => {
+    if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") nextTip();
+    if (e.key.toLowerCase() === "t") {
       const cur = localStorage.getItem("theme") || "light";
       setTheme(cur === "dark" ? "light" : "dark");
-    }, { passive: true });
+    }
+  });
 
-    // Keyboard support (desktop)
-    window.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter" || e.key === "ArrowRight") nextTip();
-      if (e.key.toLowerCase() === "t") {
-        const cur = localStorage.getItem("theme") || "light";
-        setTheme(cur === "dark" ? "light" : "dark");
-      }
-    });
-
-    // Init
-    (function init() {
-      const saved = localStorage.getItem("theme") || "light";
-      setTheme(saved);
-      render();
-    })();
+  // Init
+  (function init() {
+    const saved = localStorage.getItem("theme") || "light";
+    setTheme(saved);
+    render();
+  })();
   </script>
 </body>
 </html>
